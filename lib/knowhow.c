@@ -115,7 +115,7 @@ void insert(TREE, void_ref_t data)
     p_tree->data = insert_rec(p_tree->data, data);
 }
 
-node_t* node_with_mimum_value(ROOT) {
+node_t* node_with_min_value(ROOT) {
   node_t *current = p_root;
   while (current->p_left != NULL)
     current = current->p_left;
@@ -125,6 +125,7 @@ node_t* node_with_mimum_value(ROOT) {
 // deletes a node from the AVL tree
 node_t * delete_rec(ROOT, u_int32_t key)
 {
+    p("in del: %d\n", key);
     // Find the node and delete it
   if (p_root == NULL)
     return p_root;
@@ -133,17 +134,19 @@ node_t * delete_rec(ROOT, u_int32_t key)
   else if (key > p_root->ref.key)
     p_root->p_right = delete_rec(p_root->p_right, key);
   else {
-    if ((p_root->p_left == NULL) ||
-      (p_root->p_right == NULL)) {
+    if ((p_root->p_left == NULL) || (p_root->p_right == NULL)) 
+    {
+        p("del found %d\n", key);
       node_t *temp = p_root->p_left ? p_root->p_left : p_root->p_right;
       if (temp == NULL) {
         temp = p_root;
         p_root = NULL;
       } else
         *p_root = *temp;
+      p("del %p\n", temp);
       free(temp);
     } else {
-      node_t *temp = node_with_mimum_value(p_root->p_right);
+      node_t *temp = node_with_min_value(p_root->p_right);
       p_root->ref.key = temp->ref.key;
       p_root->p_right = delete_rec(p_root->p_right,
                    temp->ref.key);

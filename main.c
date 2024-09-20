@@ -47,7 +47,6 @@ int main(int argc, char** argv)
 	printf("\n");
     }
 
-    exit(0);
 
     print(p_tree);
 
@@ -64,13 +63,22 @@ int main(int argc, char** argv)
     printf(msg[!((size_t)v | (size_t)0)], 99, v);
 
 
-    printf("delete 1,8,9,4 %p \n",p_tree);
-
-    delete(p_tree, 1);
-    //delete(p_tree, 2);
-    delete(p_tree, 8);
-    delete(p_tree, 9);
-    delete(p_tree, 4);
+    void_ref_t arr_del[] = 
+    {
+	{2, "e"}
+    ,{7, "98"}
+    ,{8, "98"}
+    ,{44, "98"}
+    ,{22, "98"}
+    ,{98, "98"}
+    
+    };
+    for(int i=0; i < sizeof(arr_del)/sizeof(void_ref_t);i++)    {
+	printf("del %d %s\n", arr_del[i].key, arr_del[i].p_context);
+	delete(p_tree, arr_del[i].key);
+	print(p_tree);
+	printf("\n");
+    }
     print(p_tree);
 
     destructor(&p_tree);
