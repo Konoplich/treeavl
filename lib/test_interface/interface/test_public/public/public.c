@@ -35,7 +35,7 @@ node_t* new_node(void)
 {
 	node_t *pNew = malloc(sizeof(node_t));
 
-    pNew->ht = 0;
+    pNew->ht = 1;
 	pNew->ref.key = 0;
 	pNew->ref.p_context = NULL;
 	pNew->p_left = NULL;
@@ -55,7 +55,7 @@ void destructor(PTREE)
 
 void print_rec(ROOT, char* end, char* start)
 {
-    p("print_rec\n");
+    //p("print_rec\n");
     char *pr = (end-3<start)?"...":end-3;
     printf("%s %p [%d-%s]\n", pr,  p_root, p_root->ref.key, (char*)p_root->ref.p_context);
     if(NULL != p_root->p_left)

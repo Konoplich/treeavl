@@ -9,7 +9,7 @@
 #define ROOT node_t *p_root
 #define SafeDelete(x)		{ if (NULL != (x)) { free(x);     (x) = NULL; } }
 
-//#define DEBUG
+#define DEBUG
 
 #ifdef DEBUG
     #define p(...) printf("line %d ", __LINE__); printf(__VA_ARGS__);

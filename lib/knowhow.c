@@ -16,31 +16,32 @@ int height(ROOT)
 // rotates to the p_left
 node_t* rotate_left(ROOT)
 {
-    node_t* p_right_child = p_root->p_right;
-    p_root->p_right = p_right_child->p_left;
-    p_right_child->p_left = p_root;
- 
-    // update the heights of the nodes
-    p_root->ht = height(p_root);
-    p_right_child->ht = height(p_right_child);
- 
-    // return the new node after rotation
-    return p_right_child;
+    p("rl\n");
+  node_t *y = p_root->p_right;
+  node_t *T2 = y->p_left;
+  y->p_left = p_root;
+  p_root->p_right = T2;
+  p_root->ht = Max(height(p_root->p_left), height(p_root->p_right)) + 1;
+  y->ht = Max(height(y->p_left), height(y->p_right)) + 1;
+  return y;
 }
+
  
 // rotates to the p_right
 node_t* rotate_right(ROOT)
 {
-    node_t* p_left_child = p_root->p_left;
-    p_root->p_left = p_left_child->p_right;
-    p_left_child->p_right = p_root;
- 
-    // update the heights of the nodes
-    p_root->ht = height(p_root);
-    p_left_child->ht = height(p_left_child);
- 
-    // return the new node after rotation
-    return p_left_child;
+    p("rr\n");
+    node_t *x = p_root->p_left;
+    node_t *T2 = x->p_right;
+    x->p_right = p_root;
+    p_root->p_left = T2;
+    p_root->ht = Max(height(p_root->p_left),
+          height(p_root->p_right)) +
+        1;
+    x->ht = Max(height(x->p_left),
+          height(x->p_right)) +
+        1;
+    return x;
 }
  
 // calculates the balance factor of a node
@@ -51,67 +52,6 @@ int balance_factor(ROOT)
     return height(p_root->p_left) - height(p_root->p_right);
 }
  
-
-// inserts a new node in the AVL tree
-node_t* insert_rec1(ROOT, void_ref_t data)
-{
-    if (p_root == NULL)
-    {
-        node_t* pNew = new_node();
-        pNew->ref = data;
-        p("new node: %d %s\n", pNew->ref.key, pNew->ref.p_context);
-        if (pNew == NULL)
-        {
-            return NULL;
-        }
-        return  pNew;
-    }
-    else if (data.key > p_root->ref.key)
-    {
-        p("\n");
-        // insert the new node to the p_right
-        p_root->p_right = insert_rec1(p_root->p_right, data);
- 
-        // tree is unbalanced, then rotate it
-        if (balance_factor(p_root) == -2)
-        {
-            if (data.key > p_root->p_right->ref.key)
-            {                
-                p_root = rotate_left(p_root);
-                p("rotete left\n");
-            }
-            else
-            {
-                p_root->p_right = rotate_right(p_root->p_right);
-                p_root = rotate_left(p_root);
-                p("rotate right,left\n");
-            }
-        }
-    }
-    else 
-    {
-        p("\n");
-        // insert the new node to the p_left
-        p_root->p_left = insert_rec1(p_root->p_left, data);
- 
-        // tree is unbalanced, then rotate it
-        if (balance_factor(p_root) == 2)
-        {
-            if (data.key < p_root->p_left->ref.key)
-            {
-                p_root = rotate_right(p_root);
-            }
-            else
-            {
-                p_root->p_left = rotate_left(p_root->p_left);
-                p_root = rotate_right(p_root);
-            }
-        }
-    }
-    // update the heights of the nodes
-    p_root->ht = height(p_root);
-    return p_root;
-}
 // inserts a new node in the AVL tree
 node_t* insert_rec(ROOT, void_ref_t data)
 {
@@ -124,18 +64,18 @@ node_t* insert_rec(ROOT, void_ref_t data)
         }
         pNew->ref = data;
         p("new node: %d %s\n", pNew->ref.key, pNew->ref.p_context);
-
         return  pNew;
     }
-    else if (data.key > p_root->ref.key)
+    
+    if (data.key > p_root->ref.key)
     {
-        p("\n");
+        p("ins right\n");
         // insert the new node to the p_right
         p_root->p_right = insert_rec(p_root->p_right, data);
     }
     else if (data.key < p_root->ref.key)
     {
-        p("\n");
+        p("ins left\n");
         // insert the new node to the p_left
         p_root->p_left = insert_rec(p_root->p_left, data);
     }
@@ -146,6 +86,8 @@ node_t* insert_rec(ROOT, void_ref_t data)
   // balance the 
   p_root->ht = 1 + (Max(height(p_root->p_left), height(p_root->p_right)));
   int balanceFactor = balance_factor(p_root);
+
+  p("balance %d\n", balanceFactor);
   if (balanceFactor > 1) {
     if (data.key < p_root->p_left->ref.key) {
       return rotate_right(p_root);
@@ -173,78 +115,65 @@ void insert(TREE, void_ref_t data)
     p_tree->data = insert_rec(p_tree->data, data);
 }
 
+node_t* node_with_mimum_value(ROOT) {
+  node_t *current = p_root;
+  while (current->p_left != NULL)
+    current = current->p_left;
+  return current;
+}
+
 // deletes a node from the AVL tree
-node_t * delete_rec(ROOT, u_int32_t x)
+node_t * delete_rec(ROOT, u_int32_t key)
 {
-    node_t * temp = NULL;
- 
-    if (p_root == NULL)
-    {
-        return NULL;
-    } 
- 
-    if (x > p_root->ref.key)
-    {
-        p_root->p_right = delete_rec(p_root->p_right, x);
-        if (balance_factor(p_root) == 2)
-        {
-            if (balance_factor(p_root->p_left) >= 0)
-            {
-                p_root = rotate_right(p_root);
-            }
-            else
-            {
-                p_root->p_left = rotate_left(p_root->p_left);
-                p_root = rotate_right(p_root);
-            }
-        }
+    // Find the node and delete it
+  if (p_root == NULL)
+    return p_root;
+  if (key < p_root->ref.key)
+    p_root->p_left = delete_rec(p_root->p_left, key);
+  else if (key > p_root->ref.key)
+    p_root->p_right = delete_rec(p_root->p_right, key);
+  else {
+    if ((p_root->p_left == NULL) ||
+      (p_root->p_right == NULL)) {
+      node_t *temp = p_root->p_left ? p_root->p_left : p_root->p_right;
+      if (temp == NULL) {
+        temp = p_root;
+        p_root = NULL;
+      } else
+        *p_root = *temp;
+      free(temp);
+    } else {
+      node_t *temp = node_with_mimum_value(p_root->p_right);
+      p_root->ref.key = temp->ref.key;
+      p_root->p_right = delete_rec(p_root->p_right,
+                   temp->ref.key);
     }
-    else if (x < p_root->ref.key)
-    {
-        p_root->p_left = delete_rec(p_root->p_left, x);
-        if (balance_factor(p_root) == -2)
-        {
-            if (balance_factor(p_root->p_right) <= 0)
-            {
-                p_root = rotate_left(p_root);
-            }
-            else
-            {
-                p_root->p_right = rotate_right(p_root->p_right);
-                p_root = rotate_left(p_root);
-            }
-        }
+  }
+
+  if (p_root == NULL)
+    return p_root;
+
+  // Update the balance factor of each node and
+  // balance the tree
+  p_root->ht = 1 + (Max(height(p_root->p_left), height(p_root->p_right)));
+  int balanceFactor = balance_factor(p_root);
+  if (balanceFactor > 1) {
+    if (balance_factor(p_root->p_left) >= 0) {
+      return rotate_right(p_root);
+    } else {
+      p_root->p_left = rotate_left(p_root->p_left);
+      return rotate_right(p_root);
     }
-    else
-    {
-        if (p_root->p_right != NULL)
-        { 
-            temp = p_root->p_right;
-            while (temp->p_left != NULL)
-                temp = temp->p_left;
- 
-            p_root->ref = temp->ref;
-            p_root->p_right = delete_rec(p_root->p_right, temp->ref.key);
-            if (balance_factor(p_root) == 2)
-            {
-                if (balance_factor(p_root->p_left) >= 0)
-                {
-                    p_root = rotate_right(p_root);
-                }
-                else
-                {
-                    p_root->p_left = rotate_left(p_root->p_left);
-                    p_root = rotate_right(p_root);
-                }
-            }
-        }
-        else
-        {
-            return (p_root->p_left);
-        }
+  }
+  if (balanceFactor < -1) {
+    if (balance_factor(p_root->p_right) <= 0) {
+      return rotate_left(p_root);
+    } else {
+      p_root->p_right = rotate_right(p_root->p_right);
+      return rotate_left(p_root);
     }
-    p_root->ht = height(p_root);
-    return (p_root);
+  }
+  return p_root;
 }
 
 void delete(TREE, u_int32_t key)

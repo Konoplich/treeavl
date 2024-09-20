@@ -20,42 +20,37 @@ int main(int argc, char** argv)
         printf("error 1\n");
 	    exit(1);
     }
-    printf("ins 5,6,9\n");
-    ins(&p_tree, 5, "5");
-    print(p_tree);
-    ins(&p_tree, 6, "6");
-    print(p_tree);
-    ins(&p_tree, 9, "9");
+    void_ref_t arr[] = 
+    {
+	{14, "e"}
+	,{6, "e"}
+	,{5, "e"}
+	,{2, "e"}
+	,{1, "e"}
+	,{4, "e"}
+    ,{9, "98"}
+    ,{7, "98"}
+    ,{8, "98"}
+    ,{10, "98"}
+    ,{11, "98"}
+    ,{44, "98"}
+    ,{22, "98"}
+    ,{72, "98"}
+    ,{63, "98"}
+    ,{98, "98"}
+    
+    };
+    for(int i=0; i < sizeof(arr)/sizeof(void_ref_t);i++)    {
+	printf("ins %d %s\n", arr[i].key, arr[i].p_context);
+	ins(&p_tree, arr[i].key, arr[i].p_context);
+	print(p_tree);
+	printf("\n");
+    }
+
+    exit(0);
+
     print(p_tree);
 
-    printf("ins 5\n");
-    ins(&p_tree, 5, "5");
-    print(p_tree);
-    printf("ins 2,5,6\n");
-    ins(&p_tree, 2, "2");
-    print(p_tree);
-
-    ins(&p_tree, 5, "5");
-    print(p_tree);
-
-    ins(&p_tree, 6, "6");
-    print(p_tree);
-    printf("ins 9,4,10\n");
-    ins(&p_tree, 9, "9");
-    ins(&p_tree, 4, "4");
-    ins(&p_tree, 10, "10");
-    print(p_tree);
-    printf("11\n");
-    ins(&p_tree, 11, "11");
-    print(p_tree);
-    printf("7,8\n");
-    ins(&p_tree, 7, "7");
-    ins(&p_tree, 8, "8");
-    print(p_tree);
-    printf("1\n");
-    ins(&p_tree, 1, "1");
-    print(p_tree);
-/*
     char *v;
     char *msg[] = {"found %d %s\n", "not found %d\n"};
 
@@ -77,7 +72,7 @@ int main(int argc, char** argv)
     delete(p_tree, 9);
     delete(p_tree, 4);
     print(p_tree);
-*/
+
     destructor(&p_tree);
     printf("ok\n");
     return 0;
